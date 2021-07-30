@@ -3,81 +3,78 @@ module.exports = app => {
     app.get('/paginacao', (req, res) => {
         var body = (req.body);
 
-        if (!body.id || !body.paginacao) {
-            res.statusCode = 400;
-            res.send('Ocorreu um erro com o layout recebido, mande na seguinte forma: {"pagina":  1,"paginacao": 30}')
-        }
-        else {
-            if (body.paginacao <= 5) { //REGRA PARA PAGINA TOTAL DE ITENS MENOR QUE 5
-                let response = []
+        function isNumeric(n) {
+            return !isNaN(parseFloat(n)) && isFinite(n);
+        };
 
-                for (let i = 1; i <= body.paginacao; i++) {
-                    if (i == body.id) {
-                        response.push("**" + i + "**");
-                    }
-                    else {
-                        response.push("" + i);
-                    }
+        function AddArr(x, comparativo) {
+            response = []
+            for (i = x; i <= comparativo; i++) {
+                if (i == body.id) {
+                    response.push("**" + i + "**");
                 }
-
-                res.send(response);
+                else {
+                    response.push("" + i);
+                }
             }
-            else if (body.paginacao >= 6) {
+            return response
+        }
+
+        if (isNumeric(body.id)) {
+            if (isNumeric(body.paginacao)) {
+                if (body.paginacao <= 5) { //REGRA PARA PAGINA TOTAL DE ITENS MENOR QUE 5
+                    let response = []
+                    res.send(AddArr(1, body.paginacao));
+                }
                 //-------------------------------------------------------
                 //LOGICA PARA LIMITAR O NUMERO MAXIMO E MINIMO DE PAGINAS
                 //-------------------------------------------------------
+                else {
 
-                var limitadorMax = body.id + 2;
-                var limitadorMin = body.id - 2;
 
-                if (limitadorMax >= body.paginacao) {
-                    limitadorMin -= 2;
-                    limitadorMax = body.paginacao;
+                    var limitadorMax = body.id + 2;
+                    var limitadorMin = body.id - 2;
 
-                    limitadorMin += limitadorMax - body.id;
-                }
+                    if (limitadorMax >= body.paginacao) {
+                        limitadorMin -= 2;
+                        limitadorMax = body.paginacao;
 
-                if (limitadorMin <= 1) {
-                    limitadorMin = 1
-                    limitadorMax += 2;
-
-                    limitadorMax += limitadorMin - body.id;
-                }
-                //-----------------------------------------------------------------
-                //FAZ AS ULTIMAS TRATIVAS DOS ITENS SEGUINDO AS REGRAS APRESENTADAS
-                //-----------------------------------------------------------------
-
-                let response = []
-
-                for (let i = limitadorMin; i <= limitadorMax; i++) {
-                    if (i == body.id) {
-                        response.push("**" + i + "**");
+                        limitadorMin += limitadorMax - body.id;
                     }
-                    else {
-                        response.push("" + i);
-                    }
-                }
-                if (response[0] > 1) {
-                    response.unshift('...');
-                }
-                if (response[4] < body.paginacao && !response[5]) {
-                    response.push('...');
-                }
-                if (response[4] < body.paginacao && response[5] < body.paginacao) {
-                    response.push('...');
-                }
 
-                res.send(response);
+                    if (limitadorMin <= 1) {
+                        limitadorMin = 1
+                        limitadorMax += 2;
+
+                        limitadorMax += limitadorMin - body.id;
+                    }
+                    //-----------------------------------------------------------------
+                    //FAZ AS ULTIMAS TRATIVAS DOS ITENS SEGUINDO AS REGRAS APRESENTADAS
+                    //-----------------------------------------------------------------
+
+                    let response = (AddArr(limitadorMin, limitadorMax));
+
+                    if (response[0] > 1) {
+                        response.unshift('...');
+                    }
+
+                    let tamanhoArr = response.length - 1;
+
+                    if (response[tamanhoArr] < body.paginacao) {
+                        response.push('...');
+                    }
+
+                    res.send(response);
+                }
             }
-            //-----------------------------------------------------------------
-            //-----------------------------------------------------------------
-            //-----------------------------------------------------------------
-
-            else {//CASO DE ALGUM ERRO INESPERADO PARA NÃO DEIXAR SEM RESPOSTA
-                res.statusCode = 404
-                res.send("Ocorreu um erro ao processar sua requisição!");
+            else{
+                res.statusCode = 400;
+                res.send('Ocorreu um erro com o layout recebido, não mande nenhuma string: {"pagina":  1,"paginacao": 30}')
             }
         }
-
+        else {
+            res.statusCode = 400;
+            res.send('Ocorreu um erro com o layout recebido, mande na seguinte forma: {"pagina":  1,"paginacao": 30}')
+        }
     });
 }
