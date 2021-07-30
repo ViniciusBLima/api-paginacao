@@ -20,8 +20,7 @@ module.exports = app => {
             return response
         }
 
-        if (isNumeric(body.id)) {
-            if (isNumeric(body.paginacao)) {
+        if (isNumeric(body.id) && isNumeric(body.paginacao))
                 if (body.paginacao <= 5) { //REGRA PARA PAGINA TOTAL DE ITENS MENOR QUE 5
                     let response = []
                     res.send(AddArr(1, body.paginacao));
@@ -65,13 +64,8 @@ module.exports = app => {
                     }
 
                     res.send(response);
-                }
             }
-            else{
-                res.statusCode = 400;
-                res.send('Ocorreu um erro com o layout recebido, não mande nenhuma string: {"pagina":  1,"paginacao": 30}')
-            }
-        }
+
         else {
             res.statusCode = 400;
             res.send('Ocorreu um erro com o layout recebido, mande na seguinte forma: {"pagina":  1,"paginacao": 30}')
