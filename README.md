@@ -1,9 +1,10 @@
 # api-paginacao
 
 ##### Descrição
-Uma simples API que retorna um array com páginas.
-Caso o número total de páginas seja menor ou igual a 5 ele ira retornar um array simples com [1,2,**3**,4,5].
-Caso o número total de páginas ultrapasse o numero 5, ele ira começar a selecionar 5 páginas com array, dando foco nas mais proximas da pagina principal que é passada como parâmetro,e dando reticências para as outras páginas.
+Uma simples API que retorna um array com 5 itens, deixando o número principal escolhido pelo usuario na requisição em negrito, e casa haja continuação antes dos 2 primeiros numeros, ou depois dos 2 últimos números é adicionado reticências:  ```'['...', '5', '6', '**7**', '8', '9', '...']'```<br>
+
+Caso o número de paginação seja menor do que 5 é retornado um array simples, exemplo: ```'['1', '**2**', '3', '4']'```
+
 ##### URL
 
 ```
